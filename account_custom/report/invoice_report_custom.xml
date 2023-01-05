@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+        <template id="report_invoice_document_inherit_sale" inherit_id="sale.report_invoice_document_inherit_sale">
+           
+              <!--We replace the delivery address block for the condition that the company linked to the delivery address is the same as the invoiced company-->
+
+                <xpath expr="//address" position="after">
+
+                    <t t-if="o.partner_shipping_id and (o.multi_invoice != True)">
+
+                        <t t-set="information_block">
+
+                            <div groups="sale.group_delivery_invoice_address">
+
+                                <strong>Shipping address:</strong>
+
+                                <div t-field="o.partner_shipping_id"/>
+
+                            </div>
+
+                        </t>
+
+                    </t>
+
+                 </xpath>
+
+
+                <t t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)" position="replace"/>
+    </template>
+
+
+
+    <template id="inherited_report_invoice1" inherit_id="sale.report_invoice_document_inherit_sale">
+
+        <!-- position values: after|before|replace|attributes|inside -->
+        <xpath expr="/t/t/t" position="after">
+            <!-- Add your fields or attributes here -->
+
+            <div >
+
+               
+
+
+
+                <style>
+                    th{
+                    padding:10px;
+                    }
+                 
+
+                </style>
+
+               
+                <t t-if="o.multi_invoice">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Invoice Date</th>
+                                <th>
+                                    <span t-field="o.invoice_date"/>
+                                </th>
+                                <th>تاريخ الفاتورة</th>
+                            </tr>
+
+                            <tr>
+                                <th>Invoice NO</th>
+                                <th>
+                                    <span t-field="o.name"/>
+                                </th>
+                                <th>رقم الفاتورة</th>
+                            </tr>
+
+                            <tr>
+                                <th>Brand</th>
+                                <th>
+                                    
+                                        <t t-if="o.brand.name">
+                                            <span t-esc="o.brand.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span></span>
+                                        </t>
+
+                                    
+                                </th>
+                                <th>علامة تجارية</th>
+                            </tr>
+
+                        </thead>
+                    </table>
+                </t>
+
+                <br/>
+
+            </div>
+        </xpath>
+
+        <!-- position values: after|before|replace|attributes|inside -->
+        <xpath expr="//div[@id='informations']" position="after">
+            <!-- Add your fields or attributes here -->
+            <br/>
+            <div>
+                <style>
+                    .th_style {
+                    border: 1px solid #dddddd;
+                    text-align: left;
+                    padding: 8px;
+                    }
+
+                </style>
+
+                <t t-set="delivery_info" t-value="o.get_delivery_data_from_quotation()"/>
+                <t t-if="delivery_info">
+
+                    <table style="font-family: arial, sans-serif;
+                border-collapse: collapse; width: 100%;">
+
+                        <thead>
+                            <tr>
+                                <th class="th_style">Date</th>
+                                <th class="th_style">Delivery Note NO</th>
+                                <th class="th_style">PO#</th>
+                                <th class="th_style">Branch</th>
+                                <th class="th_style">Region</th>
+                                <th class="th_style">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr t-foreach="o.get_delivery_data_from_quotation()" t-as="doc">
+
+
+                                <td class="th_style">
+
+                                    <t t-if="'invoice_date' in doc">
+                                        <span t-esc="doc['invoice_date']"/>
+                                    </t>
+                                </td>
+
+                                <td class="th_style">
+                                    <t t-if="'delivery' in doc">
+                                        <span t-esc="doc['delivery']"/>
+                                    </t>
+                                </td>
+
+                                <td class="th_style">
+                                    <t t-if="'po_reference' in doc">
+                                        <span t-esc="doc['po_reference']"/>
+                                    </t>
+                                </td>
+
+                                <td class="th_style">
+                                   
+                                        <span t-esc="doc['branch']"/>
+                                   
+                                </td>
+
+                                <td class="th_style">
+                                  
+                                        <span t-esc="doc['region']"/>
+                                  
+                                </td>
+
+                                
+
+                                <td class="th_style">
+                                    <t t-if="'SO_total' in doc">
+                                        <span t-esc="doc['SO_total']"/>
+                                    </t>
+                                </td>
+
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+
+            <br/>
+
+        </xpath>
+
+        <xpath expr="//table[hasclass('o_main_table')]//thead//tr//th[@name='th_description']"
+               position="before">
+            <!-- Add your fields or attributes here -->
+            <t t-set="count_no" t-value="1"/>
+            <th name="th_no" class="text-left">
+                <span>NO</span>
+            </th>
+
+        </xpath>
+
+        <xpath expr="//table[hasclass('o_main_table')]//thead//tr//th[@name='th_description']"
+               position="after">
+            <!-- Add your fields or attributes here -->
+            <t t-set="count_no" t-value="1"/>
+            <th name="th_uom" class="text-left">
+                <span>U.O.M</span>
+            </th>
+
+        </xpath>
+
+
+        <xpath expr="//tbody[hasclass('invoice_tbody')]//tr//td[1]" position="before">
+            <td class="text-left">
+                <span t-esc="count_no"/>
+                <t t-set="count_no" t-value="count_no + 1"/>
+            </td>
+        </xpath>
+
+        <xpath expr="//tbody[hasclass('invoice_tbody')]//tr//td[2]" position="after">
+            <td class="text-left">
+                <span t-field="line.product_uom_id"/>
+            </td>
+        </xpath>
+
+    </template>
+
+</odoo>

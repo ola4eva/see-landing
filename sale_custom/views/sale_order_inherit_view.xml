@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+    <!-- Inherit Form View to Modify it Sale Order -->
+    <record id="view_inherit_sale_order_form" model="ir.ui.view">
+        <field name="name">view.inherit.sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+          
+            <xpath expr="//field[@name='partner_id']" position="after">
+                
+                <field name="po_refernce" />
+
+                <field name="tag_brands" invisible="1"/>
+                <field name="tag_regions" invisible="1"/>
+            </xpath>
+
+
+        </field>
+    </record>
+
+      <!-- Inherit Form View to Modify it Sale Order -->
+    <record id="view_inherit_sale_order_tree" model="ir.ui.view">
+        <field name="name">view.inherit.sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+
+          
+            <xpath expr="//field[@name='partner_id']" position="after">
+
+                    
+                <field name="tag_brands" string="Customer Brand"/>
+                <!-- <field name="tag_regions" string="Customer Region"/> -->
+              
+            </xpath>
+
+
+        </field>
+    </record>
+
+
+    <record id="inherit_sale_order_tree" model="ir.ui.view">
+        <field name="name">view.inherit.sale.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+
+          
+            <xpath expr="//field[@name='partner_id']" position="after">  
+                
+                <field name="tag_brands" string="Customer Brand"/>
+               <!--  <field name="tag_regions" string="Customer Region"/> -->
+              
+            </xpath>
+
+
+        </field>
+    </record>
+
+
+    <!--Inherit Search Form And Add Custom Group By -->
+    <record id="inherited_view_sale_order_list_select" model="ir.ui.view">
+        <field name="name">inherited.view.sale.order.list.select</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search/group/filter[@name='customer']" position="after">
+
+                <filter string="Brands"
+                        domain="[]"
+                        name="partner_id_brands"
+                        context="{'group_by':'tag_brands'}"/>
+
+                <filter string="Regions"
+                        domain="[]"
+                        name="partner_id_regions"
+                        context="{'group_by':'tag_regions'}"/>
+
+            </xpath>
+        </field>
+    </record>
+
+    
+        <record id="view_sale_multi_invoice" model="ir.ui.view">
+            <field name="name">Invoice Orders</field>
+            <field name="model">sale.multi.invoice</field>
+            <field name="arch" type="xml">
+                <form string="Invoice Sales Order">
+                    <group>
+                    <field name="brand_id" required="1"/>
+                    <field name="region_id" />
+                       
+                    </group>
+                    <footer>
+                        <button name="create_invoices" id="create_invoice_open" string="Create and View Invoice" type="object"
+                            context="{'open_invoices': True}" class="btn-primary" data-hotkey="q"/>
+                        <button name="create_invoices" id="create_invoice" string="Create Invoice" type="object" data-hotkey="w"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_sale_invoices" model="ir.actions.act_window">
+            <field name="name">Multi invoicing</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.multi.invoice</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <!-- TODO: check if we need this -->
+            <field name="binding_model_id" ref="sale.model_sale_order" />
+            <field name="binding_view_types">list</field>
+        </record>
+
+</odoo>

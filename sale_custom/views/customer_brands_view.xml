@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="sale_custom_view_custom_partner_view" model="ir.ui.view">
+        <field name="name">res.partner.custom.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="/form/sheet/group" position="inside">
+                    <group>
+                    	<field name="customer_rank"  invisible="1"/>
+                        <field name="brands" placeholder="Customer Brand..."/>
+                        <field name="region"  placeholder="Customer Region..."/>
+
+                         <field name="cr_number" attrs="{'invisible': [('is_company','=',False),('customer_rank' ,'&gt;=', 0)]}" placeholder="CR Number..."/>
+                    </group>
+            </xpath>
+        </field>
+    </record>
+
+
+
+       <record id="sale_custom_view_res_partner_custom_filter" model="ir.ui.view">
+            <field name="name">res.partner.custom.select</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <field name="brands" string="Brand" filter_domain="[('brands', 'child_of', self)]"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+</odoo>
+
+        	

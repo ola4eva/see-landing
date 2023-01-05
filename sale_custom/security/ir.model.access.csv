@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+brand_brand,brand.brand,model_brand_brand,base.group_user,1,1,1,1
+region_region,region.region,model_region_region,base.group_user,1,1,1,1
+product_product,product.product,model_product_product,base.group_user,1,1,1,1
+product_pricelist,product.pricelist,model_product_pricelist,base.group_user,1,1,1,1
+sale_multi_invoice_access,multi_invoice_access,model_sale_multi_invoice,,1,1,1,1
+packing_materials,packing.materials,model_packing_materials,base.group_user,1,1,1,1

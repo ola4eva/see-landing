@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+<!--     <template id="inherited_report_delivery_slip" inherit_id="stock.report_delivery_document">
+ -->
+        
+
+        
+         <record id="action_report_delivery1" model="ir.actions.report">
+            <field name="name">Delivery Slip - Sale order</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">sale_custom.report_deliveryslip1</field>
+            <field name="report_file">sale_custom.report_deliveryslip1</field>
+            <field name="print_report_name">'Delivery Slip - %s - %s' % (object.partner_id.name or '', object.name)</field>
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
+    <template id="report_delivery_document1">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
+                <t t-set="partner" t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
+                <t t-set="delivery_info" t-value="o.get_report_data()"/>
+                <t t-set="address">
+                    <div name="div_outgoing_address">
+                        <div t-if="o.move_ids_without_package and o.move_ids_without_package[0].partner_id">
+                            <span><strong>Delivery Address:</strong></span>
+                            <div t-field="o.move_ids_without_package[0].partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                        </div>
+                        <div t-if="o.picking_type_id.code != 'internal' and (not o.move_ids_without_package or not o.move_ids_without_package[0].partner_id) and o.picking_type_id.warehouse_id.partner_id">
+                            <span><strong>Warehouse Address:</strong></span>
+                            <div t-field="o.picking_type_id.warehouse_id.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                        </div>
+
+                      <div class="row mt32 mb32">
+                        <div t-if="o.sale_id.po_refernce" class="col-auto" >
+                            <strong>PO#</strong>
+                            <p t-esc="o.sale_id.po_refernce"/>
+                        </div>
+                       
+                    </div> 
+                    </div>
+                </t>
+                <t t-set="information_block">
+                    <div class="row">
+                        <div class="col-7" name="div_incoming_address">
+                            <div t-if="o.picking_type_id.code=='incoming' and partner">
+                                <span><strong>Vendor Address:</strong></span>
+                            </div>
+                            <div t-if="o.picking_type_id.code=='internal' and partner">
+                                <span><strong>Warehouse Address:</strong></span>
+                            </div>
+                            <div t-if="o.picking_type_id.code=='outgoing' and partner">
+                                <span><strong>Customer Address:</strong></span>
+                            </div>
+                            <div t-if="partner" name="partner_header">
+                                <div t-field="partner.self"
+                                    t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                                <p t-if="partner.sudo().vat"><t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="partner.sudo().vat"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                <div class="page">
+                    <h2>
+                        <span t-field="o.name"/>
+                    </h2>
+                    <div class="row mt32 mb32">
+                        <div t-if="o.origin" class="col-auto" name="div_origin">
+                            <strong>Order:</strong>
+                            <p t-field="o.origin"/>
+                        </div>
+                        <div t-if="o.state" class="col-auto" name="div_sched_date">
+                            <strong>Shipping Date:</strong>
+                            <t t-if="o.state == 'done'">
+                                <p t-field="o.date_done"/>
+                            </t>
+                            <t t-if="o.state != 'done'">
+                                <p t-field="o.scheduled_date"/>
+                           </t>
+                        </div>
+                    </div>
+                    <table class="table table-sm" t-if="o.state!='done'" name="stock_move_table">
+                        <thead>
+                            <tr>
+                               <th name="th_sm_product"><strong>Product</strong></th>
+                                <th name="th_sm_ordered"><strong>Ordered</strong></th>
+                                <th name="th_sm_quantity"><strong>Delivered</strong></th>
+                                <th name="th_sm_price"><strong>Unit Price</strong></th>
+                                <th name="th_sm_vat"><strong>VAT</strong></th>
+                                <th name="th_sm_subtotal"><strong>Subtotal</strong></th>
+                            </tr>
+                        </thead>
+                          <t t-if="delivery_info">
+                            <t t-foreach="o.get_report_data()" t-as="line">
+                            <tbody>
+                				<t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                
+                        
+                            <tr t-foreach="line['lines']" t-as="move">
+                                    <td>
+                                        <span t-esc="move['product_id']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="move['product_uom_qty']"/>
+                                        <span t-esc="move['product_uom']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="move['quantity_done']"/>
+                                        <span t-esc="move['product_uom']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="move['unit_price']"/>
+                                        
+                                    </td>
+                                     <td>
+                                        <span t-esc="float(round(move['tax_id'],2))"/>
+                                        
+                                    </td>
+                                     <td>
+                                        <span t-esc="move['subtotal']"/>
+                                        
+                                    </td>
+                            </tr>
+                        </tbody>
+                    </t>
+                </t>
+                    </table>
+                    <table class="table table-sm mt48" t-if="o.move_line_ids and o.state=='done'" name="stock_move_line_table">
+                        <t t-set="has_serial_number" t-value="False"/>
+                        <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')" groups="stock.group_lot_on_delivery_slip"/>
+                        <thead>
+                             
+                            <tr>
+                                <th name="th_sm_product"><strong>Product</strong></th>
+                                <th name="th_sm_ordered"><strong>Ordered</strong></th>
+                                <th name="th_sm_quantity"><strong>Delivered</strong></th>
+                                <th name="th_sm_price"><strong>Unit Price</strong></th>
+                                <th name="th_sm_vat"><strong>VAT</strong></th>
+                                <th name="th_sm_subtotal"><strong>Subtotal</strong></th>
+                               
+                            </tr>
+                        </thead>
+                    <t t-if="delivery_info">
+                            <t t-foreach="o.get_report_data()" t-as="line">
+                            <tbody>
+                				<t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                
+                        
+                            <tr t-foreach="line['lines']" t-as="move">
+                        
+                                <td>
+                                    <span t-esc="move['product_id']"/>
+                                       
+                                    </td>
+                                    <td>
+                                        <span t-esc="move['product_uom_qty']"/>
+                                        <span t-esc="move['product_uom']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="move['quantity_done']"/>
+                                        <span t-esc="move['product_uom']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="move['unit_price']"/>
+                                        
+                                    </td>
+                                     <td>
+                                        <span t-esc="float(round(move['tax_id'],2))"/>
+                                        
+                                    </td>
+                                     <td>
+                                        <span t-esc="move['subtotal']"/>
+                                        
+                                    </td>
+                                  </tr>
+                              
+                        </tbody>
+                    </t>
+                </t>
+                    </table>
+                    <t t-set="backorders" t-value="o.backorder_ids.filtered(lambda x: x.state not in ('done', 'cancel'))"/>
+                    <t t-if="o.backorder_ids and backorders">
+                        <p class="mt-5">
+                            <span>Remaining quantities not yet delivered:</span>
+                        </p>
+                        <table class="table table-sm" name="stock_backorder_table" style="table-layout: fixed;">
+                            <thead>
+                                <tr>
+                                    <th name="th_sb_product"><strong>Product</strong></th>
+                                    <th/>
+                                    <th name="th_sb_quantity" class="text-center"><strong>Quantity</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="backorders" t-as="backorder">
+                                    <t t-set="bo_lines" t-value="backorder.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                                    <tr t-foreach="bo_lines" t-as="bo_line">
+                                        <td class="w-auto">
+                                            <span t-field="bo_line.product_id"/>
+                                            <p t-if="bo_line.description_picking != bo_line.product_id.name and bo_line.description_picking != bo_line.product_id.display_name">
+                                                <span t-field="bo_line.description_picking"/>
+                                            </p>
+                                        </td>
+                                        <td/>
+                                        <td class="text-center w-auto">
+                                            <span t-field="bo_line.product_uom_qty"/>
+                                            <span t-field="bo_line.product_uom"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+
+                    <div t-if="o.sale_id.tax_totals_json" class="col-auto" >
+                        <table>
+                            <tr>
+                                <td>
+                                     <strong>Total Untaxed:</strong>
+                                </td>
+
+                                <td>
+                                	 <p t-esc="o.sale_id.amount_untaxed"/>
+                                   
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    <strong>Total Tax:</strong>
+                                </td>
+
+
+                                <td>
+                                    <p t-esc="o.sale_id.amount_tax"/>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>    
+                                    <strong>Total amount:</strong>
+                                </td>
+
+                                <td>
+                                        <p t-esc="o.sale_id.amount_total"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        </div>
+
+                    <div t-if="o.signature" class="mt32 ml64 mr4" name="signature">
+                        <div class="offset-8">
+                            <strong>Signature</strong>
+                        </div>
+                        <div class="offset-8">
+                            <img t-att-src="image_data_uri(o.signature)" style="max-height: 4cm; max-width: 8cm;"/>
+                        </div>
+                        <div class="offset-8 text-center">
+                            <p t-field="o.partner_id.name"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+         </t>
+    </template>
+
+    <!-- templates for easier extension + cut back on repeat code due to multiple conditionals -->
+    <!-- move line(s) printing for tables -->
+    <template id="stock_report_delivery_has_serial_move_line">
+        <td>
+            <span t-field="move_line.product_id"/>
+            <!-- this is an annoying workaround for the multiple types of descriptions (often auto-filled) that we do not want to print -->
+            <!-- this makes it so we can pre-filter the descriptions in inherited templates since we cannot extend the standard "if" condition -->
+            <!-- let's agree that pre-filtered descriptions will be set to "" -->
+            <t t-if="not description and description != ''">
+                <t t-set="description" t-value="move_line.move_id.description_picking"/>
+            </t>
+            <p t-if="description !='' and description != move_line.product_id.name">
+                <span t-esc="description"/>
+            </p>
+        </td>
+        <t t-if="has_serial_number" name="move_line_lot">
+            <td><span t-field="move_line.lot_id.name"/></td>
+        </t>
+        <td class="text-center" name="move_line_lot_qty_done">
+            <span t-field="move_line.qty_done"/>
+            <span t-field="move_line.product_uom_id"/>
+        </td>
+    </template>
+    <template id="stock_report_delivery_aggregated_move_lines">
+        <tr t-foreach="aggregated_lines" t-as="line">
+            <td>
+                <span t-esc="aggregated_lines[line]['name']"/>
+                <p t-if="aggregated_lines[line]['description']">
+                    <span t-esc="aggregated_lines[line]['description']"/>
+                </p>
+            </td>
+            <td class="text-center" name="move_line_aggregated_qty_ordered">
+                <span t-esc="aggregated_lines[line]['qty_ordered']"
+                    t-options="{'widget': 'float', 'decimal_precision': 'Product Unit of Measure'}"/>
+                <span t-esc="aggregated_lines[line]['product_uom']"/>
+            </td>
+            <td class="text-center" name="move_line_aggregated_qty_done">
+                <t t-if="aggregated_lines[line]['qty_done']">
+                    <span t-esc="aggregated_lines[line]['qty_done']"
+                        t-options="{'widget': 'float', 'decimal_precision': 'Product Unit of Measure'}"/>
+                    <span t-esc="aggregated_lines[line]['product_uom']"/>
+                </t>
+            </td>
+        </tr>
+    </template>
+
+
+    <template id="report_deliveryslip1">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="sale_custom.report_delivery_document1" t-lang="o.partner_id.lang"/>
+        </t>
+    </template>
+
+   </odoo>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="paperformat_invoice_custom1" model="report.paperformat">
+            <field name="name">A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">30.5</field>
+            <field name="margin_bottom">6</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">30</field>
+            <field name="dpi">90</field>
+        </record>
+
+    
+
+          <record id="action_report_saleorder" model="ir.actions.report">
+            <field name="name">امر البيع</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">see_leading_report.report_saleorder_inh</field>
+            <field name="report_file">see_leading_report.report_saleorder_inh</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
+        <record id="action_report_saleorder_english" model="ir.actions.report">
+            <field name="name">Quotation/order امر البيع</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">see_leading_report.report_saleorder_temp_inh</field>
+            <field name="report_file">see_leading_report.report_saleorder_temp_inh</field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="paperformat_id" ref="paperformat_invoice_custom1"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_account_invoices_delivery" model="ir.actions.report">
+            <field name="name">Invoice/Delivery</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">see_leading_report.invoice_delivery_slip</field>
+            <field name="report_file">see_leading_report.invoice_delivery_slip</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
+
+        <record id="action_account_invoices_arabic_english" model="ir.actions.report">
+            <field name="name">invoice/الفاتورة</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">see_leading_report.custom_report_invoice</field>
+            <field name="report_file">see_leading_report.custom_report_invoice</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="paperformat_id" ref="paperformat_invoice_custom1"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_delevery_arabic_english" model="ir.actions.report">
+            <field name="name"> delivery slip/وثيقة التوصيل </field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">see_leading_report.report_deliveryslip_ar_en_template</field>
+            <field name="report_file">see_leading_report.report_deliveryslip_ar_en_template</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+         <record id="action_report_delevery_arabic" model="ir.actions.report">
+            <field name="name"> وثيقة التوصيل </field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">see_leading_report.report_deliveryslip_template</field>
+            <field name="report_file">see_leading_report.report_deliveryslip_template</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="brands_form" model="ir.ui.view">
+        <field name="name">brand.brand.form</field>
+        <field name="model">brand.brand</field>
+        <field name="arch" type="xml">
+            <form string="Brand" >
+            	 <sheet>
+                   <group>
+		            	<field name="name" />
+		                <field name="regions" widget="many2many_tags"/>
+		            </group>
+		        </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="brands_list" model="ir.ui.view">
+        <field name="name">brand.brand.list</field>
+        <field name="model">brand.brand</field>
+        <field name="arch" type="xml">
+            <tree string="Brands">
+            	<field name="name" />
+                <field name="regions" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+
+    <record id="action_brand" model="ir.actions.act_window">
+        <field name="name">Brands</field>
+        <field name="res_model">brand.brand</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_brand"
+              id="brands_menu"
+              parent="sale.menu_sale_config"
+              sequence="20"/>
+
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="regions_form" model="ir.ui.view">
+
+        <field name="name">region.region.form</field>
+        <field name="model">region.region</field>
+        <field name="arch" type="xml">
+            <form string="Region" >
+                <sheet>
+                   <group>
+                    	<field name="name" />
+                        <field name="branches" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="reigon_list" model="ir.ui.view">
+        <field name="name">region.region.list</field>
+        <field name="model">region.region</field>
+        <field name="arch" type="xml">
+            <tree string="Regions">
+            	<field name="name" />
+                <field name="branches" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+
+    <record id="action_region" model="ir.actions.act_window">
+        <field name="name">Regions</field>
+        <field name="res_model">region.region</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_region"
+              id="regions_menu"
+              parent="sale.menu_sale_config"
+              sequence="20"/>
+
+</odoo>

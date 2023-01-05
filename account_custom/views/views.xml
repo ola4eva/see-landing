@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_move_inherit_tree" model="ir.ui.view">
+        <field name="name">view.account.move.inherit.tree</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- position: after|before|replace|attributes|inside -->
+            <xpath expr="//field[@name='invoice_date']" position="before">
+                <!-- Add your fields or attributes here -->
+
+                 <field name="brand" string="Customer Brand"/>
+                <field name="region" string="Customer Region"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
+
